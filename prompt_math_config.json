@@ -1,0 +1,105 @@
+{
+  "scheduleFunctions": {
+    "fade_in": {
+      "label": "Fade In",
+      "direction": "increase",
+      "description": "Gradually raise attention between start and end timesteps.",
+      "defaults": {
+        "start": 0.0,
+        "end": 1.0
+      },
+      "parameters": [
+        {
+          "name": "start",
+          "type": "float",
+          "required": true
+        },
+        {
+          "name": "end",
+          "type": "float",
+          "required": true
+        },
+        {
+          "name": "curve",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "template": "@ fade_in({start}, {end})"
+    },
+    "fade_out": {
+      "label": "Fade Out",
+      "direction": "decrease",
+      "description": "Gradually lower attention between start and end timesteps.",
+      "defaults": {
+        "start": 0.0,
+        "end": 1.0
+      },
+      "parameters": [
+        {
+          "name": "start",
+          "type": "float",
+          "required": true
+        },
+        {
+          "name": "end",
+          "type": "float",
+          "required": true
+        },
+        {
+          "name": "curve",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "template": "@ fade_out({start}, {end})"
+    }
+  },
+  "samplers": {
+    "source": "fallback",
+    "available": [],
+    "metadata": {}
+  },
+  "templates": [
+    {
+      "name": "Basic Analogy",
+      "code": "[[ [king] - [man] + [woman] ]]",
+      "description": "Classic vector arithmetic analogy"
+    },
+    {
+      "name": "Quality Aggregate",
+      "code": "[[ mean([blurry],[grainy],[ugly]) ]]",
+      "description": "Average multiple negative qualities"
+    },
+    {
+      "name": "Style Transfer",
+      "code": "[[ [content] + 0.7*([style] - mean([photo],[realistic])) ]]",
+      "description": "Transfer style while preserving content"
+    },
+    {
+      "name": "Temporal Fade In",
+      "code": "[[ [detailed] @ fade_in(0.2, 0.8) ]]",
+      "description": "Gradually introduce details during sampling"
+    },
+    {
+      "name": "Style Morphing",
+      "code": "[[ [oil_painting] @ fade_out(0.0, 0.5) + [watercolor] @ fade_in(0.5, 1.0) ]]",
+      "description": "Transition from one style to another"
+    },
+    {
+      "name": "Emphasis Burst",
+      "code": "[[ [sharp] @ emphasis(2.0, 0.0, 0.3) ]]",
+      "description": "Strong emphasis early in sampling"
+    },
+    {
+      "name": "Bell Curve Focus",
+      "code": "[[ [glowing] @ bell(0.5, 0.2, 2.0) ]]",
+      "description": "Peak attention in the middle of sampling"
+    },
+    {
+      "name": "Pulsing Effect",
+      "code": "[[ [dynamic] @ pulse(3, 0.5) ]]",
+      "description": "Oscillating attention throughout sampling"
+    }
+  ]
+}

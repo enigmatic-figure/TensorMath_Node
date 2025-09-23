@@ -1,54 +1,71 @@
 # Coursework 1: Introduction to Scheduling
 
-Welcome to the first lesson in our TensorMath_Node coursework series. In this lesson, you'll learn about one of the most powerful features of the toolkit: **Scheduling**.
+This lesson expands the quickstart by focusing on one core capability of Prompt Math—**scheduling**. You will learn what schedules are, why they matter, and how to author your own time-aware expressions.
 
-## 1. What is Scheduling?
+## 1. Understanding Scheduling
 
-In the "Getting Started" guide, you learned how to give a concept a fixed weight, like `(cat:0.5)`. Scheduling takes this a step further: it allows you to **change the weight of a concept over the course of the image generation process.**
+Diffusion models generate images over multiple steps. Scheduling lets you change a token's weight as those steps progress. Instead of a static blend, you can:
 
-Think of the image generation as happening in a series of steps. With scheduling, you can tell the model to pay more attention to "cat" at the beginning of the process and less attention at the end, or vice-versa.
+- Fade a concept in or out.
+- Pulse attention for emphasis.
+- Chain envelopes so different concepts dominate at different phases.
 
-## 2. Why is Scheduling Useful?
+Mathematically, a schedule is an easing curve sampled across the `[0, 1]` diffusion timeline. The evaluator converts the curve into per-token weights and stores them in the `schedule_payload` output.
 
-Scheduling unlocks a huge range of creative possibilities:
+## 2. Anatomy of a Schedule Expression
 
-*   **Smooth Transitions:** You can create smooth blends between different concepts. Imagine an image that starts as a sketch and slowly "paints" itself into a photograph.
-*   **Concept Emphasis:** You can emphasize certain details at different stages. For example, you could have the broad strokes of a landscape appear first, with the fine details filling in later.
-*   **Evolving Narratives:** You can create images that tell a story. A character's expression could subtly shift from happy to sad, or a serene landscape could gradually transform into a stormy one.
+A scheduled token looks like this:
 
-## 3. Your First Scheduled Prompt
+```
+[[ [token_name] @ fade_in(0.2, 0.8, "smooth") ]]
+```
 
-Let's try it out. We're going to create a prompt where the concept of a "robot" fades in over the course of the generation.
+Component summary:
 
-1.  **Add a TensorMath_Node** to your workflow.
-2.  **In the text box, type the following:**
-    ```
-    (robot:linear:0:1)
-    ```
-3.  **Generate an image.**
+- `[token_name]` — the embedding you want to manipulate.
+- `@` — attaches schedule metadata to the preceding token.
+- `fade_in` — the schedule factory to use (`fade_out` is also built in).
+- `(0.2, 0.8, "smooth")` — arguments passed to the factory. In this case the token ramps from weight 0 at 20% of the timeline to weight 1 at 80% using a smooth Hermite curve.
 
-Let's break down what this prompt does:
+## 3. Guided Exercise
 
-*   `robot`: This is the concept we're manipulating.
-*   `linear`: This is the **schedule type**. `linear` means the weight will change at a constant rate.
-*   `0`: This is the **starting weight**. At the beginning of the generation, "robot" will have a weight of 0.
-*   `1`: This is the **ending weight**. At the end of the generation, "robot" will have a weight of 1.
+Follow the steps below in ComfyUI.
 
-So, this prompt tells the model to "fade in" the concept of a robot over the course of the generation. Try experimenting with other concepts and see what you can create!
+1. **Set up the node.** Add `Prompt Math - Evaluate` and feed it a token library containing `"robot"` and `"portrait"` embeddings.
+2. **Create a fade-in.** Use this expression:
+   ```
+   [[ [robot] @ fade_in(0.1, 0.7) ]]
+   ```
+   Observe how the subject acquires robotic features as sampling proceeds.
+3. **Add a counterweight.** Update the expression to:
+   ```
+   [[ [portrait] * 0.7 + [robot] * 0.3 @ fade_in(0.1, 0.7, "ease_in_out") ]]
+   ```
+   Now the portrait stays dominant while the robotic style gently emerges.
+4. **Experiment with timing.** Move the start/end values closer together to create a rapid transition (e.g. `fade_in(0.45, 0.55)`).
 
-## 4. Available Schedules
+## 4. Inspecting the Result
 
-TensorMath_Node comes with a variety of built-in schedules to give you fine-grained control over your prompts. Some of the most common ones include:
+Connect `schedule_payload` to a `Python` node and print the contents:
 
-*   `linear`: A constant rate of change.
-*   `ease-in`: Starts slow and then speeds up.
-*   `ease-out`: Starts fast and then slows down.
-*   `hermite`: A smooth, S-shaped curve.
+```python
+for schedule in schedule_payload["schedules"]:
+    print(schedule["token"], schedule["start"], schedule["end"], schedule["curve"])
+```
 
-You can find a full list of available schedules in the node's documentation (which we'll build out later!).
+You should see the timing metadata align with your expression. Use the values to coordinate other nodes—noise schedules, LoRA strengths, or custom attention controllers—so everything follows the same tempo.
 
-## 5. Next Steps
+## 5. Practice Prompts
 
-Congratulations, you've now learned the basics of scheduling! The best way to learn more is to experiment. Try combining multiple scheduled concepts in a single prompt, or try using different schedule types to see how they affect the output.
+Try authoring expressions for the scenarios below:
 
-In the next lesson, we'll cover how to blend multiple schedules together to create even more complex and interesting effects.
+1. **Day-to-night landscape.** Crossfade `[daytime_forest]` and `[night_sky]` using `fade_out` and `fade_in` respectively.
+2. **Highlight details mid-sampling.** Keep `[architecture]` at full strength but spike `[neon_lights]` between 60% and 75% of the diffusion timeline.
+3. **Multi-stage style transfer.** Start with `[sketch]`, transition to `[oil_painting]`, then finish with `[photograph]` using three consecutive schedules.
+
+Document the expressions that work well; they make great building blocks for future workflows.
+
+## 6. Next Lesson Preview
+
+In the next coursework module we will explore composing multiple schedules across complex expressions, sharing schedule factories, and exposing sliders in the ComfyUI front end for real-time adjustments.
+

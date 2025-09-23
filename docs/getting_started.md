@@ -1,48 +1,86 @@
-# Getting Started with TensorMath_Node
+# Getting Started with TensorMath
 
-Welcome to TensorMath_Node! This guide will help you install the tool and take your first steps into the world of "Prompt Memetic Engineering."
+Welcome! This guide walks you from first install to a working Prompt Math workflow inside ComfyUI. If you only need a high-level overview, start with the repository [README](../README.md). When you are ready to build your first schedule-driven prompt, follow the steps below.
 
-## 1. What is TensorMath_Node?
+## 1. Prerequisites
 
-In simple terms, TensorMath_Node is a powerful calculator for your prompts in ComfyUI. It lets you control the concepts in your prompts with mathematical precision. Instead of just writing "a cat and a dog," you can say "50% cat and 50% dog," or even make the "cat" part of the prompt fade in over time.
+- ComfyUI cloned or downloaded from the official repository
+- Python 3.12 (Bundled with the Windows release. On Linux/macOS use the same Python version ComfyUI uses.)
+- Optional: PyTorch 2.x to run inference with GPU acceleration
 
-This approach, which we call "Prompt Memetic Engineering," allows for a whole new level of creativity and control. If you're interested in the science behind it, you can read our white paper: [An Introduction to Prompt Memetic Engineering](papers/prompt_memetic_engineering.md).
+If you cannot install PyTorch immediately, the included `torch.py` shim lets you run tests and simple experiments using NumPy under the hood.
 
 ## 2. Installation
 
-Getting TensorMath_Node running in ComfyUI is easy. Just follow these steps:
+1. **Download the node.** Clone the repository or unzip the release archive.
+2. **Copy it into ComfyUI.** Place the folder inside `ComfyUI/custom_nodes/` (for example `ComfyUI/custom_nodes/TensorMath`). The folder should contain `__init__.py`, the `tensor_math/` package, and the `web/` directory.
+3. **Install dependencies.** Activate the Python environment ComfyUI ships with and run:
+   ```bash
+   pip install -r requirements.txt
+   pip install torch                 # optional but recommended for production
+   pip install -r requirements-dev.txt  # installs pytest for the smoke tests
+   ```
+4. **Restart ComfyUI.** Launch your normal ComfyUI entry point (`run_nvidia_gpu.bat`, `python main.py`, etc.). Open the UI in a browser and confirm the nodes appear under `conditioning/tensor math`.
 
-1.  **Navigate to your ComfyUI installation.**
-2.  Find the `custom_nodes` directory. It's usually located at `ComfyUI/custom_nodes/`.
-3.  **Download the TensorMath_Node files.** You can do this by cloning the repository or downloading the ZIP file.
-4.  **Place the files in the right location.**
-    *   Copy the `src/prompt_math` folder into your `custom_nodes` directory.
-    *   Copy the Python files (`prompt_math_eval_extended.py`, `prompt_math_extended_functions.py`, etc.) from the root of the project into the `custom_nodes` directory alongside the `prompt_math` folder.
-5.  **Restart ComfyUI.**
+## 3. Verify the Installation
 
-That's it! The TensorMath nodes should now be available in your ComfyUI node menu.
+Add a new node by right-clicking the canvas and searching for `Prompt Math`. You should see two nodes:
 
-## 3. Your First Prompt
+- `Prompt Math - Evaluate`
+- `Prompt Math - Frontend Config`
 
-Let's try a simple example.
+If the nodes are missing, review the troubleshooting section in the README (common fixes include making sure the directory name is correct and restarting ComfyUI).
 
-1.  **Add a TensorMath_Node** to your workflow. You can find it by right-clicking, selecting "Add Node," and looking for "TensorMath."
-2.  **Connect it to your model's prompt input.**
-3.  **In the TensorMath_Node's text box, type the following:**
-    ```
-    (cat:0.5), (dog:0.5)
-    ```
-4.  **Generate an image.**
+## 4. Build Your First Workflow
 
-You should see an image that is a blend of a cat and a dog. You've just created your first engineered prompt! You controlled the "strength" of the "cat" and "dog" concepts in your prompt.
+Follow this minimal example to produce a blended embedding and a registered schedule:
 
-## 4. What's Next?
+1. **Insert a `Prompt Math - Evaluate` node.**
+2. **Supply token vectors.** The node expects a Python dictionary where each key is a token string and each value resolves to a tensor. Quick ways to provide one:
+   - Use the built-in `Python` node with code similar to:
+     ```python
+     {
+         "cat": clip_text_encode("cat"),
+         "dog": clip_text_encode("dog"),
+         "pad": clip_text_encode("")
+     }
+     ```
+   - Connect the output of a custom embedding loader if you already index tokens elsewhere.
+3. **Configure the expression.** Set the `expression` input to:
+   ```
+   [[ [cat] * 0.5 + [dog] * 0.5 @ fade_in(0.2, 0.8, "smooth") ]]
+   ```
+   This starts with an equal blend of the two tokens, then increases the "dog" component using the `fade_in` schedule between 20% and 80% of the sampling timeline with a smooth easing curve.
+4. **Route the outputs.**
+   - Connect `tensor` to the conditioning input of your sampler (e.g. to a `KSampler` node).
+   - Optionally inspect `schedule_payload` by plugging it into a `Preview` or custom Python node to validate the metadata.
+5. **Run the flow.** Generate an image. You should see the prompt transition manifest as the diffusion progresses.
 
-You've only scratched the surface of what's possible. To continue your journey, we recommend checking out the following resources:
+## 5. Explore the Prompt Math DSL
 
-*   **[Coursework](coursework/introduction_to_scheduling.md):** Our guided lessons will walk you through the core features of TensorMath_Node, one concept at a time.
-*   **[Examples](examples/simple_fade.md):** Explore our collection of practical examples to see how you can use TensorMath_Node in your own workflows.
-*   **[FAQ](faq.md):** Find answers to common questions.
-*   **[Hints and Tips](hints_and_tips.md):** Learn some advanced tricks and techniques.
+- Wrap expressions in double brackets: `[[ ... ]]`.
+- Reference tokens using square brackets: `[token_name]`.
+- Combine tokens with `+`, `-`, `*`, and scalar literals.
+- Add schedules with the `@` operator: `[token] @ fade_in(0.1, 0.9, "ease_in_out")`.
+- Nest expressions when combining multiple operations: `[[ ([cat] - [dog]) * 0.6 ]]`.
 
-Happy engineering!
+Refer back to the README for a full list of built-in schedules and schedule curves.
+
+## 6. Regenerate the Front-End Configuration (Optional)
+
+When you register additional schedule builders via `ScheduleFactory`, rebuild the JavaScript configuration so the browser UI stays in sync:
+
+```bash
+py -3.12 -c "import json, pathlib; from tensor_math.prompt_math.evaluator import build_frontend_config; pathlib.Path('web/prompt_math_config.json').write_text(json.dumps(build_frontend_config(), indent=2) + '\n')"
+```
+
+Reload the ComfyUI browser tab to pick up the new metadata.
+
+## 7. Next Steps
+
+- Continue with [Coursework 1: Introduction to Scheduling](coursework/introduction_to_scheduling.md) for guided practice.
+- Browse the [examples](examples/simple_fade.md) for ready-made expressions.
+- Read the [FAQ](faq.md) for troubleshooting and design guidance.
+- Dive into [hints and tips](hints_and_tips.md) to learn advanced blending strategies.
+
+Happy prompting!

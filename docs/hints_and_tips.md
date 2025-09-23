@@ -1,23 +1,38 @@
 # Hints and Tips
 
-Ready to take your prompt engineering to the next level? Here are a few hints and tips for getting the most out of TensorMath_Node.
+Already comfortable with the basics? The ideas below help you squeeze more control out of Prompt Math expressions.
 
-## Tip: Use Negative Weights to Subtract Concepts
+## Blend Strategically
 
-You can use negative weights to "subtract" a concept from your prompt. For example, if you're generating a forest scene but want to reduce the number of trees, you could try a prompt like:
+- **Normalise weights mentally.** Expressions are evaluated exactly as written, so `[[ [cat] + [dog] ]]` is equivalent to a 50/50 blend. Scale terms explicitly when you want bias (`[[ 0.8 * [cat] + 0.2 * [dog] ]]`).
+- **Subtract with care.** Negative weights are powerful but can amplify noise. When subtracting `[trees]` from a forest scene, clamp the result with `NormalizationOperations` downstream if artifacts appear.
 
-`(forest:1), (trees:-0.5)`
+## Pair Schedules for Narrative Control
 
-This can be a powerful way to fine-tune your images and remove unwanted elements. Be aware that this is an experimental feature, and the results can sometimes be unpredictable.
+- **Crossfades:** Use complementary `fade_in` and `fade_out` schedules on two tokens to create cinematic transitions.
+- **Pulses:** Register a custom pulse schedule to create rhythmic emphasis (great for music-video style prompts). Combine it with multiplication to modulate only a subset of the expression.
+- **Envelope Stacking:** Multiple schedules on the same token multiply together. Chain a `fade_in` with a short emphasis burst to get a rapid highlight at a precise moment.
 
-## Tip: Combine with other Custom Nodes
+## Manage Token Libraries
 
-TensorMath_Node is just one piece of the puzzle. You can combine it with other custom nodes to create incredibly complex and powerful workflows. For example, you could use a "latent noise" node to create a base image, and then use TensorMath_Node to apply a scheduled style to it.
+- Store embeddings in a dedicated `Python` node or load them from disk so they are easy to reuse across flows.
+- Cache heavy embeddings with ComfyUI's save/load nodes to avoid recomputing encodes.
+- Keep a neutral or blank embedding (`pad`) on hand so the evaluator never has to fall back to zeros unintentionally.
 
-## Tip: The Power of Zero
+## Inspect Schedule Output
 
-Don't underestimate the power of a zero weight. You can use a schedule to completely remove a concept at a certain point in the generation. For example, `(raining:1:hermite:1:0)` will create a scene that starts with rain and ends with no rain at all. This can be more effective than trying to add a "not raining" concept with a negative weight.
+- The `schedule_payload` output is JSON-friendly. Plug it into a `Python` node and print the contents while iterating through the diffusion timeline to understand how weights evolve.
+- When debugging custom schedules, feed the payload into `ScheduleEvaluator` manually to confirm values at specific timesteps.
 
-## Tip: Discovering New Schedules
+## Compose with Other Nodes
 
-Want to see how the schedules are defined? Take a look at the `prompt_math_extended_functions.py` file. You'll find the Python functions that define the shape of each schedule. You can even add your own custom schedules by following the examples in that file and registering them with the `ScheduleFactory`.
+- Combine TensorMath with control nets or LoRA loaders: generate conditioning with TensorMath, then mix it with LoRA modifiers using downstream math nodes.
+- Use TensorMath in latent image-to-image chains to keep prompt emphasis aligned with image strength schedules.
+
+## Keep the Front-End in Sync
+
+- Any time you add or modify schedules in Python, regenerate the config and clear browser caches. Inconsistent metadata is the most common cause of UI glitches.
+- If you ship TensorMath as part of a larger custom node pack, ensure the `web/` folder is copied verbatim so the editor assets remain available.
+
+Experiment, iterate, and document the expressions that work best for you—sharing those recipes back with the community helps everyone build stronger prompt libraries.
+

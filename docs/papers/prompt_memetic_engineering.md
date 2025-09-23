@@ -2,7 +2,7 @@
 
 ## Abstract
 
-This paper introduces "Prompt Memetic Engineering" (PME), a new paradigm that reframes prompt creation as a scientific discipline akin to genetic engineering. Where traditional prompt engineering often relies on intuition and trial-and-error, PME provides a structured, mathematical framework for manipulating and combining conceptual units—or "memes"—within a prompt. By leveraging high-dimensional vector spaces and programmable scheduling, PME enables precise control over the semantic and conceptual fabric of generative model outputs. This paper outlines the theoretical foundations of PME and introduces the TensorMath_Node toolkit as a practical implementation of these principles.
+This paper introduces "Prompt Memetic Engineering" (PME), a new paradigm that reframes prompt creation as a scientific discipline akin to genetic engineering. Where traditional prompt engineering often relies on intuition and trial-and-error, PME provides a structured, mathematical framework for manipulating and combining conceptual units—or "memes"—within a prompt. By leveraging high-dimensional vector spaces and programmable scheduling, PME enables precise control over the semantic and conceptual fabric of generative model outputs. This paper outlines the theoretical foundations of PME and introduces the TensorMath Node toolkit as a practical implementation of these principles.
 
 ## 1. Introduction: Beyond Traditional Prompt Engineering
 
@@ -12,7 +12,7 @@ Prompt Memetic Engineering offers a path forward. It treats prompts not as monol
 
 ## 2. The Core Concepts of Memetic Engineering
 
-At the heart of PME is the "prompt meme," a fundamental unit of meaning or style that can be isolated, quantified, and manipulated. In the context of the TensorMath_Node toolkit, a meme is represented as a tensor, a high-dimensional vector that captures its semantic essence.
+At the heart of PME is the "prompt meme," a fundamental unit of meaning or style that can be isolated, quantified, and manipulated. In the context of the TensorMath Node toolkit, a meme is represented as a tensor, a high-dimensional vector that captures its semantic essence.
 
 PME involves several key operations on these memes:
 
@@ -20,16 +20,17 @@ PME involves several key operations on these memes:
 *   **Scheduling:** Varying the influence of a meme over the generation process. This allows for dynamic effects, such as fading a concept in or out, or creating complex, evolving narratives within a single generation.
 *   **Masking:** Applying a meme's influence to a specific region of the output space, allowing for fine-grained spatial control.
 
-## 3. The TensorMath_Node Toolkit: A New Paradigm
+## 3. The TensorMath Node Toolkit: A New Paradigm
 
-The TensorMath_Node project provides a concrete implementation of the PME framework for ComfyUI. Its key features directly map to the core concepts of PME:
+The TensorMath Node project provides a concrete implementation of the PME framework for ComfyUI. Its key features directly map to the core concepts of PME:
 
 *   **Robust Parser & Evaluator:** Allows for the definition and manipulation of memes using a simple mathematical syntax.
 *   **Scheduling Toolkit:** Provides a rich set of functions for controlling the influence of memes over time.
 *   **Extended Math Helpers:** Offers the vector operations necessary for blending, masking, and normalizing memes.
 
-By providing these tools, TensorMath_Node elevates prompt engineering from a craft to a true engineering discipline.
+By providing these tools, TensorMath Node elevates prompt engineering from a craft to a true engineering discipline.
 
 ## 4. Conclusion: The Future of Prompt Engineering
 
-Prompt Memetic Engineering represents a significant step forward in our ability to control and understand generative models. By providing a structured, mathematical framework for prompt creation, PME opens the door to new levels of precision, replicability, and creative expression. The TensorMath_Node toolkit is a first step in this exciting new direction, and we invite the community to join us in exploring the limitless potential of this new science.
+Prompt Memetic Engineering represents a significant step forward in our ability to control and understand generative models. By providing a structured, mathematical framework for prompt creation, PME opens the door to new levels of precision, replicability, and creative expression. The TensorMath Node toolkit is a first step in this exciting new direction, and we invite the community to join us in exploring the limitless potential of this new science.
+

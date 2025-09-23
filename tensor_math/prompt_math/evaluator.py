@@ -1,4 +1,4 @@
-﻿"""Evaluation helpers for Prompt Math expressions with scheduling support.
+"""Evaluation helpers for Prompt Math expressions with scheduling support.
 
 The evaluator walks the parsed AST, materialises tensors via a lookup, and
 registers attention schedules for downstream ComfyUI nodes.
@@ -13,8 +13,8 @@ from typing import Callable, Iterable, List, Sequence, Tuple
 
 import torch
 
-from prompt_math_parser_extended import ASTNode, ScheduleCall
-from prompt_math_scheduling import (
+from tensor_math.prompt_math.parser import ASTNode, ScheduleCall
+from tensor_math.prompt_math.scheduling import (
     AttentionScheduler,
     CurveType,
     ScheduleEvaluator,
@@ -524,3 +524,5 @@ def evaluate_expr_with_scheduling(
         for schedule in schedules:
             evaluator.evaluate(schedule, schedule.params.start_time)
     return result, schedules
+
+

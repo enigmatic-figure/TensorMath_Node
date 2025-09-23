@@ -1,0 +1,9 @@
+{
+  "name": "TensorMath Node",
+  "author": "enigmatic-figure",
+  "version": "0.1.0-alpha",
+  "license": "MIT",
+  "description": "Prompt Memetic Engineering utilities for programmable tensor math and attention scheduling inside ComfyUI.",
+  "tags": ["conditioning", "prompt", "math", "scheduling"],
+  "link": "https://github.com/enigmatic-figure/TensorMath_Node"
+}

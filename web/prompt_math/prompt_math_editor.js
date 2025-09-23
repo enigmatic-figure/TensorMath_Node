@@ -13,7 +13,7 @@ const PROMPT_MATH_CONFIG_URL = (() => {
             }
         }
     }
-    return 'prompt_math_config.json';
+    return 'web/prompt_math_config.json';
 })();
 
 const DEFAULT_SCHEDULE_FUNCTIONS = {
@@ -1016,3 +1016,4 @@ if (typeof module !== 'undefined' && module.exports) {
         DEFAULT_PROMPT_MATH_CONFIG,
     };
 }
+

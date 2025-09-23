@@ -1,8 +1,8 @@
-﻿import unittest
+import unittest
 import sys
 import types
 import torch
-from prompt_math_scheduling import (
+from tensor_math.prompt_math.scheduling import (
     CurveType,
     ScheduleParams,
     TokenSchedule,
@@ -13,8 +13,8 @@ from prompt_math_scheduling import (
     create_fade_in_schedule,
     create_fade_out_schedule,
 )
-from prompt_math_parser_extended import ExtendedParser
-from prompt_math_eval_extended import (
+from tensor_math.prompt_math.parser import ExtendedParser
+from tensor_math.prompt_math.evaluator import (
     evaluate_expr_with_scheduling,
     EvaluationContext,
     ScheduleFactory,
@@ -22,7 +22,7 @@ from prompt_math_eval_extended import (
     get_pad_vector,
     discover_comfy_schedulers,
 )
-from prompt_math_extended_functions import (
+from tensor_math.prompt_math.functions import (
     VectorOperations,
     StatisticalOperations,
     MaskingOperations,
@@ -273,6 +273,7 @@ class TestExtendedFunctions(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 
 
 

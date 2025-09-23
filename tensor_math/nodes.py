@@ -6,7 +6,7 @@ from typing import Any, Dict, Tuple
 
 import torch
 
-from tensor_math.prompt_math import (
+from .prompt_math import (
     AttentionScheduler,
     EvaluationContext,
     ExtendedParser,

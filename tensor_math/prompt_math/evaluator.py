@@ -13,8 +13,8 @@ from typing import Callable, Iterable, List, Sequence, Tuple
 
 import torch
 
-from tensor_math.prompt_math.parser import ASTNode, ScheduleCall
-from tensor_math.prompt_math.scheduling import (
+from .parser import ASTNode, ScheduleCall
+from .scheduling import (
     AttentionScheduler,
     CurveType,
     ScheduleEvaluator,
